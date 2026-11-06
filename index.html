@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pizzería de fracciones</title>
+<style>
+*{box-sizing:border-box}
+:root{--bg:#eef2ea;--card:#fff;--ink:#25302b;--mute:#5d6b63;--line:#cbd6cc;--acc:#e4572e;--ok:#1f8a5a;--bad:#c23b50;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141b17;--card:#1e2823;--ink:#eaf1ec;--mute:#a0b0a6;--line:#34443b;--acc:#f0825f;--ok:#4cc58a;--bad:#ef7186;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141b17;--card:#1e2823;--ink:#eaf1ec;--mute:#a0b0a6;--line:#34443b;--acc:#f0825f;--ok:#4cc58a;--bad:#ef7186;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:520px;margin:0 auto;padding:16px}
+h1,h2,.fr{font-family:Georgia,"Times New Roman",serif}
+h1{font-size:2.1rem;line-height:1.1;margin:.3em 0}
+h2{font-size:1.4rem;margin:.2em 0 .4em}
+p{margin:.5em 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1.5px solid var(--ink);background:var(--card);color:var(--ink);padding:10px 14px;min-height:44px}
+button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+button:disabled{opacity:.45;cursor:default}
+button.main{background:var(--ink);color:var(--bg);font-weight:700;width:100%}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{flex:1;min-width:0;text-align:center;font-size:.8rem;padding:5px 4px;border-radius:8px;border:1.5px solid var(--line);color:var(--mute)}
+.chip.on{border-color:var(--acc);color:var(--ink);font-weight:700}
+.chip.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.stat{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:.95rem}
+.dots span{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid var(--acc);margin-right:5px}
+.dots span.f{background:var(--acc)}
+.q{font-size:1.25rem}
+.pz{width:min(260px,70%);display:block;margin:10px auto}
+.sl{fill:var(--card);stroke:var(--ink);stroke-width:1.6;cursor:pointer}
+.sl.on{fill:var(--acc)}
+.sl:focus-visible{stroke:var(--acc);stroke-width:4;outline:none}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.cmp button{padding:8px;text-align:center}
+.cmp .pz{width:100%}
+.cmp .fr{font-size:1.6rem;font-weight:700}
+.bar2{display:flex;margin:6px 0;border:2px solid var(--ink);border-radius:8px;overflow:hidden}
+.cell{flex:1;min-height:44px;min-width:0;border:0;border-right:1.5px solid var(--ink);border-radius:0;padding:0;background:var(--card)}
+.cell:last-child{border-right:0}
+.cell.on{background:var(--acc)}
+.cnt{text-align:center;color:var(--mute);margin:4px 0}
+.fb{padding:12px;border-radius:10px;margin-top:12px;border-left:5px solid}
+.fb.g{border-color:var(--ok)}.fb.b{border-color:var(--bad)}
+.big{font:700 2.4rem Georgia,serif}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<section id="start">
+  <h1>Pizzería de fracciones</h1>
+  <div class="card">
+    <p>Prototipo de práctica interactiva. Hay cuatro niveles: <b>construir</b>, <b>comparar</b>, <b>sumar</b> y <b>equivalentes</b>.</p>
+    <p>Para subir de nivel necesitas <b>3 aciertos seguidos</b>. Si fallas, el juego te explica el error y vuelves a empezar la racha.</p>
+    <p>Los ejercicios se generan al azar, así que casi nunca se repiten.</p>
+  </div>
+  <button class="main" id="go">Abrir la pizzería</button>
+</section>
+
+<section id="game" class="hide">
+  <div class="card">
+    <div class="chips" id="chips"></div>
+    <div class="stat"><span class="dots" id="dots" aria-label="Racha"></span><span>XP: <b id="xp">0</b></span></div>
+  </div>
+  <div class="card">
+    <p class="q" id="q"></p>
+    <div id="vis"></div>
+    <p class="cnt" id="cnt"></p>
+    <button class="main" id="chk">Comprobar</button>
+    <div class="fb hide" id="fb"></div>
+    <button class="main hide" id="nx" style="margin-top:10px">Siguiente</button>
+  </div>
+</section>
+
+<section id="end" class="hide">
+  <div class="card" style="text-align:center">
+    <h2>¡Dominaste las fracciones!</h2>
+    <div class="big" id="tx"></div>
+    <p id="ts"></p>
+  </div>
+  <div class="card"><p>Esto es un prototipo: el mismo molde (ejercicios aleatorios, racha para subir de nivel y explicación del error) se puede repetir para cualquier tema.</p></div>
+  <button class="main" id="again">Jugar de nuevo</button>
+</section>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const LVN=["Construir","Comparar","Sumar","Equivalentes"];
+let lv=0,streak=0,xp=0,hits=0,tries=0,ex,sel=new Set(),locked=false;
+
+function pizza(b,sh,inter){
+  let h='<svg viewBox="0 0 120 120" class="pz" role="img" aria-label="Círculo dividido en '+b+' partes iguales">';
+  for(let i=0;i<b;i++){
+    const a1=-Math.PI/2+2*Math.PI*i/b,a2=-Math.PI/2+2*Math.PI*(i+1)/b;
+    const x1=(60+54*Math.cos(a1)).toFixed(1),y1=(60+54*Math.sin(a1)).toFixed(1),x2=(60+54*Math.cos(a2)).toFixed(1),y2=(60+54*Math.sin(a2)).toFixed(1);
+    h+='<path d="M60 60L'+x1+' '+y1+'A54 54 0 0 1 '+x2+' '+y2+'Z" class="sl'+(sh(i)?" on":"")+'"'+(inter?' data-i="'+i+'" tabindex="0" role="button" aria-label="Parte '+(i+1)+'"':"")+'/>';
+  }
+  return h+"</svg>";
+}
+function bar(n,sh,inter){
+  let h='<div class="bar2">';
+  for(let i=0;i<n;i++)h+=inter?'<button class="cell'+(sh(i)?" on":"")+'" data-i="'+i+'" aria-label="Parte '+(i+1)+'"></button>':'<div class="cell'+(sh(i)?" on":"")+'"></div>';
+  return h+"</div>";
+}
+function gen(){
+  if(lv===0){const b=rnd(2,8),a=rnd(1,b-1);
+    return{k:"p",b,goal:a,q:"Pinta <b class='fr'>"+a+"/"+b+"</b> de la pizza.",why:"El denominador "+b+" indica en cuántas partes iguales se divide la pizza, y el numerador "+a+" cuántas se pintan."};}
+  if(lv===1){let a1,b1,a2,b2;
+    do{b1=rnd(2,8);b2=rnd(2,8);a1=rnd(1,b1-1);a2=rnd(1,b2-1);}while(a1*b2===a2*b1);
+    const p=a1*b2,q=a2*b1;
+    return{k:"c",f:[[a1,b1],[a2,b2]],goal:p>q?0:1,q:"¿Cuál fracción es <b>mayor</b>? Toca la pizza.",why:"Multiplica en cruz: "+a1+" × "+b2+" = "+p+" y "+a2+" × "+b1+" = "+q+". El producto más grande señala la fracción mayor."};}
+  if(lv===2){const b=rnd(4,10),a=rnd(1,b-2),c=rnd(1,b-a);
+    return{k:"p",b,goal:a+c,q:"Pinta el resultado de <b class='fr'>"+a+"/"+b+" + "+c+"/"+b+"</b>.",why:"Con el mismo denominador se suman solo los numeradores: "+a+" + "+c+" = "+(a+c)+", y el denominador sigue siendo "+b+". El resultado es "+(a+c)+"/"+b+"."};}
+  const b=[2,3,4,5,6][rnd(0,4)],a=rnd(1,b-1);let m=rnd(2,4);while(b*m>12)m--;
+  return{k:"b",b,a,d:b*m,goal:a*m,q:"Pinta en la barra de abajo la <b>misma cantidad</b> que arriba.",why:"Multiplica numerador y denominador por "+m+": "+a+"/"+b+" = "+(a*m)+"/"+(b*m)+". Hay que pintar "+(a*m)+" partes."};
+}
+function render(){
+  $("chips").innerHTML=LVN.map((n,i)=>'<div class="chip'+(i<lv?" done":i===lv?" on":"")+'">'+(i+1)+". "+n+"</div>").join("");
+  $("dots").innerHTML=[0,1,2].map(i=>'<span class="'+(i<streak?"f":"")+'"></span>').join("");
+  $("xp").textContent=xp;
+}
+function draw(){
+  const s=i=>sel.has(i);
+  $("q").innerHTML=ex.q;
+  if(ex.k==="p")$("vis").innerHTML=pizza(ex.b,s,!locked);
+  else if(ex.k==="b")$("vis").innerHTML='<p style="margin:0;color:var(--mute)">Barra de arriba</p>'+bar(ex.b,i=>i<ex.a,false)+'<p style="margin:0;color:var(--mute)">Tu barra</p>'+bar(ex.d,s,!locked);
+  else $("vis").innerHTML='<div class="cmp">'+ex.f.map(([a,b],i)=>'<button data-c="'+i+'"'+(locked?" disabled":"")+'>'+pizza(b,j=>j<a,false)+'<span class="fr">'+a+'/'+b+'</span></button>').join("")+"</div>";
+  const cp=ex.k!=="c";
+  $("cnt").textContent=cp?"Partes pintadas: "+sel.size:"";
+  $("cnt").classList.toggle("hide",!cp);
+  $("chk").classList.toggle("hide",!cp||locked);
+}
+function newEx(){
+  ex=gen();sel=new Set();locked=false;
+  $("fb").classList.add("hide");$("nx").classList.add("hide");
+  render();draw();
+}
+function answer(good){
+  locked=true;tries++;
+  let msg;
+  if(good){
+    hits++;streak++;const gain=10+(streak===3?10:0);xp+=gain;
+    msg="¡Correcto! +"+gain+" XP. "+(ex.k==="c"?ex.why:"");
+    if(streak===3){streak=0;lv++;if(lv===4){render();draw();$("fb").className="fb g";$("fb").textContent="¡Completaste el último nivel!";$("nx").textContent="Ver resultado";$("nx").classList.remove("hide");return;}
+      msg+=" Subes al nivel "+(lv+1)+": "+LVN[lv]+".";}
+  }else{streak=0;msg="Todavía no. "+ex.why;}
+  render();draw();
+  $("fb").className="fb "+(good?"g":"b");$("fb").textContent=msg;
+  $("nx").textContent="Siguiente";$("nx").classList.remove("hide");
+  $("nx").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+function toggle(i){if(locked)return;sel.has(i)?sel.delete(i):sel.add(i);draw();}
+$("vis").addEventListener("click",e=>{
+  const c=e.target.closest("[data-c]");
+  if(c&&!locked){answer(+c.dataset.c===ex.goal);return;}
+  const t=e.target.closest("[data-i]");if(t)toggle(+t.dataset.i);
+});
+$("vis").addEventListener("keydown",e=>{
+  if(e.key!=="Enter"&&e.key!==" ")return;
+  const t=e.target.closest("path[data-i]");if(t){e.preventDefault();toggle(+t.dataset.i);}
+});
+$("chk").onclick=()=>{if(!locked)answer(sel.size===ex.goal);};
+$("nx").onclick=()=>{
+  if(lv===4){
+    $("tx").textContent=xp+" XP";
+    $("ts").textContent="Acertaste "+hits+" de "+tries+" ejercicios ("+Math.round(100*hits/tries)+" %).";
+    ["start","game","end"].forEach(x=>$(x).classList.toggle("hide",x!=="end"));scrollTo(0,0);return;
+  }
+  newEx();
+};
+function start(){lv=0;streak=0;xp=0;hits=0;tries=0;["start","game","end"].forEach(x=>$(x).classList.toggle("hide",x!=="game"));newEx();scrollTo(0,0);}
+$("go").onclick=$("again").onclick=start;
+</script>
+</body>
+</html>
